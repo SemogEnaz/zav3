@@ -3,7 +3,7 @@ from visualizer import Vis
 
 class Bounce(Vis):
 
-    def make_bounce_frames(self) -> list[str]:
+    def make_frames(self) -> None:
 
         max_width = 90
         bounce_line_frames = []
@@ -26,4 +26,4 @@ class Bounce(Vis):
 
         for row in self.frames:
             print(row)
-            time.sleep(wait_time) 
+            self.sleep(wait_time) 

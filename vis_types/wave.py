@@ -11,7 +11,7 @@ class Wave(Vis):
         self.char = '|'
         self.is_hollow = False
 
-    def make_wave_frames(self) -> list[str]:
+    def make_frames(self) -> None:
         audio_data = self.get_relevant_data()
 
         max_height = self.max_height
@@ -24,8 +24,6 @@ class Wave(Vis):
             wave_array = self.fill_col(index, col_count, wave_array)
 
         self.frames = wave_array
-
-        #self.frames = self.make_frames_to_lines()
 
     def fill_col(self, index: int, col_count: int, array):
 
@@ -48,42 +46,13 @@ class Wave(Vis):
                 
         return array
 
-    def make_frames_to_lines(self):
-
-        height = self.max_height
-        width = self.get_width() // 2
-        array = ["" for _ in range(height)]
-        frame = ''
-        frames = []
-
-        for _ in self.frames[0]:
-
-            # Removing last col form array and appending new col to back
-            for row_index, row in enumerate(array):
-                if len(row) == width:
-                    row = row[1:] + self.frames[row_index][self.col_count]
-                else:
-                    row += self.frames[row_index][self.col_count]
-
-                array[row_index] = row
-
-            for row in array:
-                frame += row + '\n'
-
-            for row in array[::-1]:
-                frame += row + '\n'
-
-            frames.append(frame)
-
-            self.col_count += 1
-
-        return frames
-
     def print_frames(self, wait_time) -> None:
+        # TODO: remove the array we use to render, directly index the frames made by the 
+        # make frames function above, this should lead to faster render speed
 
         height = self.max_height
         width = self.get_width() // 2
-        array = ["" for _ in range(height)]
+        array = ["" for _ in range(height)] # This is the array we will use to render
 
         for _ in self.frames[0]:
 
@@ -113,11 +82,13 @@ class Wave(Vis):
             # For some reason the speed lines up better for rez 8 to 20 when we reduce the
             # calculated wait time by 5%
             # TODO: Look into this later...
-            time.sleep(wait_time - (0.05 * wait_time))
+            self.sleep(wait_time - (0.05 * wait_time))
 
     def get_width(self):
+        # get terminal width
         term_size = shutil.get_terminal_size()
         return term_size.columns
 
     def move_cursor_up(self, num_lines=1):
+        # \33[F is the code to move the cursor up
         print('\33[F' * num_lines, end='')
