@@ -12,7 +12,9 @@ class Clam():
 
         # getting the command line arguments
         self.args = sys.argv[1:]
-        self.num_args = len(self.args)
+
+        if len(self.args) == 0:
+            self.args = ['c', 'rez', '20', 'wl', '-s', 'music/playboi carti - arm n leg-CVqu5zP3c_M.wav']
 
         """ 
         list of valid command line arguments
@@ -95,12 +97,12 @@ class Clam():
 
         if 'bl' in args:
             vis = Bounce(self.data)
-            vis.make_bounce_frames()
         elif 'dl' in args:
             frames = self.data
         elif 'wl' in args or len(args) == 0:
             vis = Wave(self.data)
-            vis.make_wave_frames()
+
+        vis.make_frames()
 
         self.vis = vis
 
