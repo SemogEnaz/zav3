@@ -1,9 +1,10 @@
 import math
+import time
 from abc import ABC, abstractmethod
 
 class Vis(ABC):
 
-    def __init__(self, audio_data):
+    def __init__(self, audio_data) -> None:
 
         # These are the number of digits of the data from each line we want.
         self.from_index = 2
@@ -25,7 +26,7 @@ class Vis(ABC):
 
         return max_value
 
-    def get_relevant_data(self):
+    def get_relevant_data(self) -> float:
 
         a = self.from_index
         b = self.till_index
@@ -34,12 +35,23 @@ class Vis(ABC):
 
         return fixed_data
 
-    """
-    This is a pretty important method, it is used to display a frame of data
-    corresponding to every tick on auido/time
-    """
+    def sleep(self, wait_time) -> None:
+        time.sleep(wait_time)
+
+    @abstractmethod
+    def make_frames(self) -> None:
+        """
+        This method will be what generates the frames for the visualizer, each vis
+        will implement this obv.
+        """
+        pass
+
     @abstractmethod
     def print_frames(self, wait_time) -> None:
+        """
+        This is a pretty important method, it is used to display a frame of data
+        corresponding to every tick on auido/time
+        """
         pass
 
 if __name__ == '__main__':
