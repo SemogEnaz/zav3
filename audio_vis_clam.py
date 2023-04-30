@@ -1,10 +1,11 @@
 import sys
-import librosa
-import numpy as np
+
+from file_io import IO
+from visualizer import Vis
 
 class Clam():
 
-    def __init__(self):
+    def __init__(self, default_resolution=20):
 
         # getting the command line arguments
         self.args = sys.argv[1:]
@@ -17,50 +18,83 @@ class Clam():
         None: sets a default value to the dimensons
         """
 
+        # All the stuff generated using the command line will be stored here and 
+        # we will retrive it into main when needed
+        self.resolution = default_resolution
         self.data = None
+        self.frames = None
 
-        self.exe_cmd_args()
+        self.audio_path = 'music/Let U Go-fXF59UWr-tA.wav'
+        self.exe_cmd_args(self.args)
+
+    def exe_cmd_args(self, args: list) -> None:
+
+        self.get_audio_files(args)
+        self.set_resolution(args)
+        self.make_data(args)
+        self.make_frames(args)
+
+        return
+
+    def get_audio_files(self, args) -> None:
+
+        if '-s' not in args:
+            return
         
-    def exe_cmd_args(self) -> None:
+        index = args.index('-s') + 1
 
-        if 'r' in self.args or len(self.args) == 0:
-            self.read_audio_file()
-        elif 'c' in self.args:
-            self.make_audio_file('./Let U Go-fXF59UWr-tA.wav')
+        file_name = args[index]
 
-    def read_audio_file(self) -> list[str]:
-        data = []
+        # checking if the user wants to play only a single file & setting audio_path
+        if '.wav' in file_name:
+            self.audio_path = file_name
+            return
 
-        with open('./audio_data.txt', 'r') as file:
-            for line in file:
-                line = self.sci_to_float(line)
-                data.append(line)
+        # manage multiple files
+
+        pass
+
+    def set_resolution(self, args):
+
+        if 'r' in args:
+            return
+        
+        resolution_arg = 'rez'
+
+        if resolution_arg not in args:
+            return
+
+        index = args.index(resolution_arg)
+        rez = args[index + 1]
+
+        self.resolution = int(rez) 
+
+    def make_data(self, args) -> None:
+
+        io = IO(self.resolution)
+        data = None
+
+        if 'r' in args:
+            data = io.read_audio_file()
+            # Here the prior freq is saved in the last line of the audio_data file
+            self.resolution = io.frequency 
+        elif 'c' in args:
+            data = io.make_audio_file(self.audio_path)
 
         self.data = data
-    
-    def sci_to_float(self, text: str) -> str:
 
-        exponent = len(text)
-        format_string = '{:.' + str(exponent) + 'f}'
-        num = format_string.format(float(text))
-        num = str(num)
+        return
 
-        return num
-    
-    def make_audio_file(self, audio_path='') -> list[str]:
+    def make_frames(self, args) -> None:
 
-        # Load the audio file
-        audio_data, sr = librosa.load(audio_path, sr=44100)  # 44.1kHz sampling rate
+        visualizer = Vis(self.data)
+        frames = None
 
-        # Divide the audio data into 1ms intervals
-        ms = int(sr/16)  # number of samples per millisecond
-        audio_data_ms = [audio_data[i:i+ms] for i in range(0, len(audio_data), ms)]
+        if 'bl' in args:
+            frames = visualizer.make_bounce_frames()
+        elif 'dl' in args:
+            frames = self.data
 
-        # Calculate the value of the audio signal at each time interval
-        audio_data_ms_avg = np.array([np.mean(np.abs(x)) for x in audio_data_ms])
+        self.frames = frames
 
-        # Store the audio data in a text file
-        output_file = './audio_data.txt'
-        np.savetxt(output_file, audio_data_ms_avg) # Can be used for diagonstics
-
-        self.data = [str(data_line) for data_line in audio_data_ms_avg]
+        return
