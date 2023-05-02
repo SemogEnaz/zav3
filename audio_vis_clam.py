@@ -29,10 +29,11 @@ class Clam():
 
     def exe_cmd_args(self, args: list) -> None:
 
-        self.get_audio_files(args)
-        self.set_resolution(args)
-        self.make_data(args)
-        self.make_frames(args)
+                                    # Usage of each argument
+        self.get_audio_files(args)  # -s "path/to/file"
+        self.set_resolution(args)   # -rez (int), only useable with 'c'
+        self.make_data(args)        # c or r, create form *.wav or read form data.txt
+        self.make_frames(args)      # bl or dl, bounce line or data line
 
         return
 
