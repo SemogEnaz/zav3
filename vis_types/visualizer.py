@@ -1,18 +1,16 @@
 import math
-from abc import ABC, abstractmethod
 
-class Vis(ABC):
+class Vis():
 
-    def __init__(self, audio_data):
+    def __init__(self, audio_data: list[str]):
 
         # These are the number of digits of the data from each line we want.
         self.from_index = 2
-        self.till_index = 8
+        self.till_index = 6
 
         # Set the audio data so that we can make the frames later
         self.audio_data = audio_data
         self.max_value = self.get_max()
-        self.frames = None
 
     def get_max(self) -> int:
 
@@ -33,14 +31,6 @@ class Vis(ABC):
         fixed_data = [float(data[a:b]) for data in self.audio_data]
 
         return fixed_data
-
-    """
-    This is a pretty important method, it is used to display a frame of data
-    corresponding to every tick on auido/time
-    """
-    @abstractmethod
-    def print_frames(self, wait_time) -> None:
-        pass
 
 if __name__ == '__main__':
     pass

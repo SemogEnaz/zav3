@@ -1,7 +1,10 @@
 import sys
 
 from file_io import IO
-from visualizer import Vis
+
+from vis_types.visualizer import Vis
+from vis_types.bounce import Bounce
+from vis_types.wave import Wave
 
 class Clam():
 
@@ -22,7 +25,7 @@ class Clam():
         # we will retrive it into main when needed
         self.resolution = default_resolution
         self.data = None
-        self.frames = None
+        self.vis = None
 
         self.audio_path = 'music/Let U Go-fXF59UWr-tA.wav'
         self.exe_cmd_args(self.args)
@@ -75,7 +78,7 @@ class Clam():
         io = IO(self.resolution)
         data = None
 
-        if 'r' in args:
+        if 'r' in args or len(args) == 0:
             data = io.read_audio_file()
             # Here the prior freq is saved in the last line of the audio_data file
             self.resolution = io.frequency 
@@ -88,14 +91,17 @@ class Clam():
 
     def make_frames(self, args) -> None:
 
-        visualizer = Vis(self.data)
-        frames = None
+        vis = None
 
         if 'bl' in args:
-            frames = visualizer.make_bounce_frames()
+            vis = Bounce(self.data)
+            vis.make_bounce_frames()
         elif 'dl' in args:
             frames = self.data
+        elif 'wl' in args or len(args) == 0:
+            vis = Wave(self.data)
+            vis.make_wave_frames()
 
-        self.frames = frames
+        self.vis = vis
 
         return

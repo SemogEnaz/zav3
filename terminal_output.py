@@ -5,7 +5,7 @@ class Screen():
         return color_code + string + '\033[0m'
 
     def text_to_green(self, string):
-        return '\033[32m' + string + '\033[0m'
+        return text_to('\033[32m', string)
 
     
     def move_cursor_down(self, num_lines=1):

@@ -1,6 +1,9 @@
 from terminal_output import Screen
 from audio_vis_clam import Clam
-from visualizer import Vis
+
+from vis_types.visualizer import Vis
+from vis_types.bounce import Bounce
+from vis_types.wave import Wave
 
 import time
 import subprocess
@@ -11,14 +14,14 @@ def main():
     clam = Clam()
 
     data = clam.data
-    frames = clam.frames
+    vis = clam.vis
     data_points = len(data)
     sleep_time = 1/clam.resolution
 
     audio_path = clam.audio_path
 
     auido_event = make_audio_event(audio_path)
-    vis_event = make_vis_event(frames, sleep_time)
+    vis_event = make_vis_event(vis, sleep_time)
 
     run_events(auido_event, vis_event)
 
@@ -42,7 +45,7 @@ def make_audio_event(audio_path: str):
 
     return event
 
-def make_vis_event(audio_data: list, sleep_time):
+def make_vis_event(vis: Vis, sleep_time):
     """
     This function has some syncronization issues, if the precision is very high for the 
     data, the number of wait and print operations will cause an overall delay in the visualizer
@@ -50,27 +53,21 @@ def make_vis_event(audio_data: list, sleep_time):
     printed per wait operation
     """
 
-    def run_vis(audio_data: list, event, sleep_time) -> None:
+    def run_vis(vis: Vis, event, sleep_time) -> None:
 
         event.wait()
 
-        for data in audio_data:
-            return_car_line(data)
-            time.sleep(sleep_time)
+        vis.print_frames(sleep_time)
+
         return
 
     event = threading.Event() # This event represents starting the music
 
     # Creating and starting the thread
-    vis_thread = threading.Thread(target=run_vis, args=(audio_data, event, sleep_time))
+    vis_thread = threading.Thread(target=run_vis, args=(vis, event, sleep_time))
     vis_thread.start()
 
     return event
-
-def return_car_line(text: float) -> None:
-    #print(text + '\r', end="")
-    print(text)
-    #print('\n' + text, end="")
 
 def run_events(audio_event, vis_event) -> None:
 
