@@ -1,8 +1,7 @@
-music/*
-!music/
+!music/*.txt	# All media files in the music directory
 
-.vscode
+.vscode		# VScode generated files
 
-__*
+__*		# Cache from python
 
-*.txt
+audio_data.txt	# This file is just not important enough
